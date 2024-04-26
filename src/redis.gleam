@@ -9,12 +9,13 @@ pub fn main() {
   io.println("Logs from your program will appear here!")
 
   let assert Ok(_) =
-    glisten.handler(fn(_conn) { #(Nil, None) }, fn(_msg, state, conn) {
-      let assert Ok(_) =
-        glisten.send(conn, bytes_builder.from_string("+PONG\r\n"))
-      actor.continue(state)
-    })
+    glisten.handler(fn(_conn) { #(Nil, None) }, handle_redis_command)
     |> glisten.serve(6379)
 
   process.sleep_forever()
+}
+
+fn handle_redis_command(_msg, state, conn) {
+  let assert Ok(_) = glisten.send(conn, bytes_builder.from_string("+PONG\r\n"))
+  actor.continue(state)
 }
